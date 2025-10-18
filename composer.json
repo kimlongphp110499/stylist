@@ -1,47 +1,51 @@
 {
-    "name": "anhtvt/stylist",
-    "description": "Laravel theming package.",
-    "authors": [
-        {
-            "name": "Kirk Bushell",
-            "email": "torm3nt@gmail.com"
-        },
-        {
-            "name": "Mike Dugan",
-            "email": "mike@mjdugan.com"
-        },
-        {
-            "name": "Yassine Kraiem",
-            "email": "kamisama953@gmail.com"
-        },
-        {
-            "name": "Mehedi Hasan",
-            "email": "MehediDracula@gmail.com"
-        },
-        {
-            "name": "Anh Tran",
-            "email": "malphite848@gmail.com"
-        }
-    ],
-    "require": {
-        "laravelcollective/html": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0",
-        "illuminate/support": "^6.0|^7.0|^8.0|^9.0|^10.0|^11.0"
+  "name": "anhtvt/stylist",
+  "description": "Laravel theming package.",
+  "version": "2.0.0-laravel11",
+  "authors": [
+    {
+      "name": "Kirk Bushell",
+      "email": "torm3nt@gmail.com"
     },
-    "autoload": {
-        "psr-4": {
-            "Mehedi\\Stylist\\": "src/Stylist"
-        }
+    {
+      "name": "Mike Dugan",
+      "email": "mike@mjdugan.com"
     },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Mehedi\\Stylist\\StylistServiceProvider"
-            ]
-        }
+    {
+      "name": "Yassine Kraiem",
+      "email": "kamisama953@gmail.com"
     },
-    "minimum-stability": "stable",
-    "config": {
-        "preferred-install": "dist"
+    {
+      "name": "Mehedi Hasan",
+      "email": "MehediDracula@gmail.com"
     },
-    "license": "MIT"
+    {
+      "name": "Anh Tran",
+      "email": "malphite848@gmail.com"
+    }
+  ],
+  "require": {
+    "php": "^8.2",
+    "illuminate/support": "^10.0|^11.0"
+  },
+  "suggest": {
+    "laravelcollective/html": "Provides form/html helpers. Optional; if you need form helpers install laravelcollective/html compatible with your app."
+  },
+  "autoload": {
+    "psr-4": {
+      "Mehedi\\Stylist\\": "src/Stylist"
+    }
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "Mehedi\\Stylist\\StylistServiceProvider"
+      ]
+    }
+  },
+  "minimum-stability": "dev",
+  "config": {
+    "preferred-install": "dist"
+  },
+  "license": "MIT"
 }
