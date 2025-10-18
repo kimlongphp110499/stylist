@@ -15,9 +15,7 @@ class StylistServiceProvider extends AggregateServiceProvider
      *
      * @var array
      */
-    protected $providers = [
-        'Collective\Html\HtmlServiceProvider'
-    ];
+    protected $providers = [];
 
     /**
      * Registers the various bindings required by other packages.
@@ -77,8 +75,88 @@ class StylistServiceProvider extends AggregateServiceProvider
      */
     protected function registerThemeBuilder()
     {
+        // Always bind a theme builder service. If Collective\Html is available use the
+        // full ThemeHtmlBuilder, otherwise provide a lightweight fallback that does
+        // not depend on the HtmlBuilder so the application can boot without it.
         $this->app->singleton('stylist.theme', function ($app) {
-            return new ThemeHtmlBuilder($app['html'], $app['url']);
+            if ($app->bound('html')) {
+                return new ThemeHtmlBuilder($app['html'], $app['url']);
+            }
+
+            $urlGenerator = $app['url'];
+
+            return new class($urlGenerator) {
+                private $url;
+
+                public function __construct($url)
+                {
+                    $this->url = $url;
+                }
+
+                private function attrString($attributes)
+                {
+                    $s = '';
+                    foreach ($attributes as $k => $v) {
+                        $s .= ' ' . htmlspecialchars($k, ENT_QUOTES) . '="' . htmlspecialchars((string) $v, ENT_QUOTES) . '"';
+                    }
+
+                    return $s;
+                }
+
+                protected function assetUrl($path)
+                {
+                    if ($this->url->isValidUrl($path)) {
+                        return $path;
+                    }
+
+                    // Try to get current theme path, fall back to provided path
+                    try {
+                        $theme = \Mehedi\Stylist\Facades\StylistFacade::current();
+                        if ($theme) {
+                            $themePath = $theme->getAssetPath();
+                            return "themes/{$themePath}/{$path}";
+                        }
+                    } catch (\Throwable $e) {
+                        // ignore and return path
+                    }
+
+                    return $path;
+                }
+
+                public function script($url, $attributes = array(), $secure = null)
+                {
+                    $u = $this->assetUrl($url);
+                    return '<script src="' . $this->url->to($u) . '"' . $this->attrString($attributes) . '></script>';
+                }
+
+                public function style($url, $attributes = array(), $secure = null)
+                {
+                    $u = $this->assetUrl($url);
+                    return '<link rel="stylesheet" href="' . $this->url->to($u) . '"' . $this->attrString($attributes) . ' />';
+                }
+
+                public function image($url, $alt = null, $attributes = array(), $secure = null)
+                {
+                    $u = $this->assetUrl($url);
+                    if ($alt !== null) {
+                        $attributes = array_merge(['alt' => $alt], $attributes);
+                    }
+
+                    return '<img src="' . $this->url->to($u) . '"' . $this->attrString($attributes) . ' />';
+                }
+
+                public function url($file = '')
+                {
+                    return $this->url->to($this->assetUrl($file));
+                }
+
+                public function linkAsset($url, $title = null, $attributes = array(), $secure = null)
+                {
+                    $u = $this->assetUrl($url);
+                    $text = $title ?? $u;
+                    return '<a href="' . $this->url->to($u) . '"' . $this->attrString($attributes) . '>' . htmlspecialchars($text, ENT_QUOTES) . '</a>';
+                }
+            };
         });
     }
 
